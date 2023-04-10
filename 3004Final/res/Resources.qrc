@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/">
+        <file>arrow-undo-up-left-svgrepo-com.svg</file>
+        <file>arrow-up-md-svgrepo-com.svg</file>
+        <file>arrow-left-md-svgrepo-com.svg</file>
+        <file>arrow-right-md-svgrepo-com.svg</file>
+        <file>arrow-down-md-svgrepo-com.svg</file>
+        <file>circle-svgrepo-com.svg</file>
+        <file>power-svgrepo-com.svg</file>
+        <file>battery-1473-svgrepo-com.svg</file>
+        <file>sensor-connected.svg</file>
+    </qresource>
+</RCC>
