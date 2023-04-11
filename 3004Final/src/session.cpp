@@ -145,7 +145,8 @@ void Session::updateCoherence() {
     coherenceTimes[this->coherenceLevel] += 5;
 }
 
-
+/*  Purpose: This method is responsible for computing a normalized error value between the pulse data in 'data' and a perfect sine
+ *  wave with period 'period' and vertical shift 'vShift'. It uses Mean Squared Error to do so.*/
 float Session::computeNormalizedError(QVector<float> data, float period, float vShift) {
 
     //We will compute the average error, minimum error and maximum error.
@@ -195,9 +196,11 @@ void Session::initializeThresholds() {
     CHALLENGE_THRESHOLDS[4]["High"] = 6.0;
 }
 
+//Getter methods
 int Session::getChallengeLevel(){return challengeLevel;}
 int Session::getPacerSpeed(){return breathPacerSpeed;}
 
+//Setter methods
 void Session::setChallengeLevel(int level){this->challengeLevel = level;}
 void Session::setPacerSpeed(int speed){this->breathPacerSpeed = speed;}
 

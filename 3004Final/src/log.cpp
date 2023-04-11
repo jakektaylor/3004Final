@@ -22,14 +22,15 @@ Log::Log(){
 int Log::getChallengeLevel() {return this->challengeLevel;}
 int Log::getPacerSpeed() {return this->breathPacerSpeed;}
 
-//Returns a string representation of the date time when the Session was recorded
+//Purpose: Returns a string representation of the date time when the Session was recorded.
 const QDateTime& Log::getDateTime() const{
     return this->date;
 }
 
-/*Purpose: This method is responsible for computing the percentage of time spent in low, medium and high coherence and returning it
-to the user.*/
+/*Purpose: This method is responsible for computing the percentage of time spent in "Low", "Medium" and "High" coherence and returning
+ * it to the user.*/
 QMap<QString, float> Log::getCoherenceDistribution() {
+
     //Create a new QMap containing the percentage of time spent at each coherence level.
     QMap<QString, float> timePercentages = QMap<QString, float>();
     if(this->coherenceTimes.isEmpty()) return timePercentages;

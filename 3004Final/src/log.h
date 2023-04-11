@@ -7,7 +7,10 @@
 #include <QVector>
 #include <QtMath>
 
-/*  Purpose: This class is meant to */
+/*  Purpose: This class is meant to keep track of the data related to a Session. It is used both for storing data to be accessed
+    during an active Session such as the pulse data and also for storing all of the data for a completed Session. In the first case,
+    it is used for displaying the Session view and in the second it is used for displaying the Summary view.
+*/
 class Log {
 
     public:

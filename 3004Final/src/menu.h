@@ -6,6 +6,9 @@
 #include <QStringList>
 #include <QVector>
 
+/*  The Menu class is responsible for being a node in a tree of Menus that begins at the Main Menu which has 'prevMenu=NULL'.
+    Each Menu has a list of items that are displayed in a QListWidget on the device.
+*/
 class Menu{
   
   public:
@@ -13,7 +16,7 @@ class Menu{
     ~Menu();
     
     //Getter methods
-    QString getMenuName();      // Gets the current name of the menu selected
+    QString getMenuName();
     QStringList getLists();
     Menu* getPrevMenu();
     Menu* getSubMenuAt(int index);
@@ -23,7 +26,6 @@ class Menu{
     void addListItem(QString item);
     void removeitemAt(int index);
     void clear();
-    //void saveChanges();  -- to update any current changes the user has made
   
   private:
     QString menuName;           // The current menu that the user has selected

@@ -2,12 +2,19 @@
 #define PROFILE_H
 #include "log.h"
 
+/*The purpose of this class is to store the Session history and Battery level. It provides methods to access and modify these values
+ as well.*/
 class Profile{
   
   public:
+    //Constructor
     Profile(int startingBattery);
+
+    //Getters
     int getBatteryLevel();
     QVector<Log> getSessionHistory();
+
+    //Setters
     void setBatteryLevel(int level);
     int addNewSession(Log session);
     int removeSession(int index);

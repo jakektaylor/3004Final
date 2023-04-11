@@ -10,13 +10,18 @@
 #include <limits>
 #include "log.h"
 
+/*  This class is responsible for handling the functionality involved in the user being in a Session. This includes getting pulse data
+    from the user (with Datagen) and computing the coherence score and other coherence related statistics. In addition, this class
+    keep track of the challenge level and breath pacer speed. Therefore, when they are changed in Settings, this class is responsible
+    for keeping track of the change.
+*/
 class Session: public QObject {
 
     Q_OBJECT
 
     public:
 
-        /*Stores the thresholds for "Medium" coehrence in each of the 4 challenge levels. Each entry will be of the following form:
+        /*Stores the thresholds for "Medium" coherence in each of the 4 challenge levels. Each entry will be of the following form:
          * {<challenge level>:{"Low": <lower bound of threshold>, "High": <upper bound of threshold>}}
         */
         static QMap<int, QMap<QString, float>> CHALLENGE_THRESHOLDS;
@@ -44,13 +49,13 @@ class Session: public QObject {
         void endSession();
     private:
         //SETTINGS RELATED
-        int challengeLevel;                                     //A value between 1 and 4 that determines the thresholds between low,
-                                                                //medium and high coherence.
+        int challengeLevel;                                     //A value between 1 and 4 that determines the thresholds between "Low",
+                                                                //"Medium" and "High" coherence.
 
         int breathPacerSpeed;                                   //A value between 1 and 30 indicating the time interval between each breath
 
         //METRICS RELATED
-        QVector<float> pulseData;                               //Keeps track if the most recent 64 seconds of pulse data.
+        QVector<float> pulseData;                               //Keeps track of the most recent 64 seconds of pulse data.
         float coherenceScore;                                   //The most recently computed coherence score
         int sessionLength;                                      //How long the session has been active for, in seconds.
         QTimer* sessionTimer;                                   //Used to keep track of time.
