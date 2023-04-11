@@ -22,7 +22,6 @@ given number of seconds has elapsed.*/
 void Datagen::getSensorReading(float seconds) {
 
     float reading = (this->amplitude * qSin(2.0 * (float) M_PI * this->period * (seconds / 60.0))) + this->vShift;
-    qInfo("The reading is %f", reading);
     //Sends the Sensor reading to the current Session object.
     emit sendSensorReading(reading);
 }

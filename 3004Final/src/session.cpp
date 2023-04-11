@@ -145,6 +145,7 @@ void Session::updateCoherence() {
     coherenceTimes[this->coherenceLevel] += 5;
 }
 
+
 float Session::computeNormalizedError(QVector<float> data, float period, float vShift) {
 
     //We will compute the average error, minimum error and maximum error.

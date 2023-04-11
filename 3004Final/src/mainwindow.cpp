@@ -105,6 +105,7 @@ void MainWindow::togglePowerOn() {
         displayingMenu = true;
         displayingSession = false;
         displayingSummary = false;
+        displayingSlider = false;
         this->displayCurrMenu();
 
         this->batteryTimer->start(30000);               //Start draining the battery every 30s that the device is on.
@@ -181,31 +182,41 @@ void MainWindow::navigateRight() {
  *  current view that the device is displaying.
 */
 void MainWindow::goToSubMenu() {
-    //Set currMenu to NULL when we display a view that is not a menu
+
+    //Handles the case where we are currently displaying a Menu
     if(this->displayingMenu) {
         int subMenuIndex = ui->menuWidget->currentRow();
+
+        //Handles case where there user has selected a sub menu
         if(currMenu->getSubMenuAt(subMenuIndex) != NULL) {
             currMenu = currMenu->getSubMenuAt(subMenuIndex);
             displayCurrMenu();
         } else {
+
+            //Handles the case where the user has chosen to go to the Session view.
             if (currMenu->getLists().at(subMenuIndex) == "Start New Session") {
+
                 //Add code here to start a new Session.
                 this->displayingMenu = false;
                 this->displayingSession = true;
                 displaySessionView();
             }
+
+            //Handles the case where the user has chosen to modify a Setting.
             else if (currMenu->getMenuName() == "Settings") {
                 this->displayingMenu=false;
                 this->displayingSlider=true;
                 displaySettingView();
             }
 
+            //Handles the case where the user has chosen to review a Session summary.
             else if(currMenu->getMenuName() == "Review Session History") {
                 this->displayingMenu = false;
                 this->displayingSummary = true;
                 displaySessionSummary(profile->getSessionHistory().at(subMenuIndex));
             }
 
+            //Handles the case where the user has chosen whether or not to clear all Session data on the device.
             else if(currMenu->getMenuName() == "Clear Session History") {
                 if(ui->menuWidget->currentRow() == 0) {
                     profile->resetDevice();
@@ -214,27 +225,37 @@ void MainWindow::goToSubMenu() {
                 goBack();
             }
         }
-    } else if(this->displayingSession) {
+    }
+
+    //Handles the case where we are displaying a Session.
+    else if(this->displayingSession) {
         if (this->sessionActive) {
             endSession();
         }
         else if(!QString::compare(ui->sensorBox->currentText(), "On", Qt::CaseInsensitive)) beginSession();
-    } else if (this->displayingSlider) {
+    }
+
+    //Handles the case where we are displaying a slider to modify a Setting.
+    else if (this->displayingSlider) {
         goBack();
-    } else {
+    }
+
+    //Handles the case where we are displaying a Session summary.
+    else {
+
         //If the user selected keep, then keep the summary.
         if(ui->keepSummary->currentRow() == 0){
-            int failure = profile->addNewSession(this->sessionSummary);
+            int failure = profile->addNewSession(this->sessionSummary);     //Ensures Session Logs are not added more than once
             if(!failure) {
-                QString dateString = this->sessionSummary.getDateTime().toString("dd:MM:yyyy hh:mm:ss");
+                QString dateString = this->sessionSummary.getDateTime().toString("Session dd:MM:yyyy hh:mm:ss");
                 mainMenu->getSubMenuAt(2)->getSubMenuAt(0)->addListItem(dateString);
             }
-        } else {
+        } else {    //Remove the summary
             int failure = profile->removeSession(ui->menuWidget->currentRow());
             if(!failure) mainMenu->getSubMenuAt(2)->getSubMenuAt(0)->removeitemAt(ui->menuWidget->currentRow());
         }
 
-        //Need to reset all of the widgets
+        //Need to reset all of the Session widgets
         this->revertSessionView();
 
         //Return the user to the main menu
@@ -245,9 +266,10 @@ void MainWindow::goToSubMenu() {
     }
 }
 
+/*Purpose: Returns the user to the main Menu whenever the 'Menu' button in the UI is pressed.*/
 void MainWindow::goToMainMenu() {
     if(this->displayingSession) {
-        //Discard whatever was recorded or changed during the session
+        //Discard whatever was recorded or changed during the session.
         this->revertSessionView();
         this->backOrMenu = true;
         endSession();
@@ -257,6 +279,7 @@ void MainWindow::goToMainMenu() {
     displayCurrMenu();
 }
 
+/*Purpose: Sends the user to the previous screen they */
 void MainWindow::goBack() {
     //Different behaviour if a Session is being displayed.
     if(this->displayingMenu) {
@@ -267,17 +290,20 @@ void MainWindow::goBack() {
         }
     } else{
         if(this->displayingSession) {
-            //Discard whatever was recorded or changed during the session
+            //Discard whatever was recorded or changed during the Session.
             this->revertSessionView();
             this->backOrMenu = true;
             endSession();
         } else if (this->displayingSummary) this->displayingSummary = false;
         else if(this->displayingSlider) this->displayingSlider = false;
+
+        //If displaying a Summary, Session or Slider, simply go back to the last seen Menu.
         this->displayingMenu = true;
         displayCurrMenu();
     }
 }
 
+/*Purpose: */
 void MainWindow::plotPulsePoint(Log currentLog) {
 
     /*Update the breath pacer*/
