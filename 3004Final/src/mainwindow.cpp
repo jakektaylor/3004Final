@@ -46,6 +46,14 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete batteryTimer;
+    delete profile;
+    delete linePen;
+    if(currentSession != NULL) delete currentSession;
+    if(generator != NULL) delete generator;
+    if(mainMenu != NULL) delete mainMenu;
+    if(scene!=NULL) delete scene;
+
 }
 
 /***IMPLEMENTING THE SLOTS FOR THE MAINWINDOW CLASS***/
@@ -454,7 +462,7 @@ void MainWindow::displaySessionView() {
     //Create the scene.
     QGraphicsView* graph = ui->hrvGraph;
     graph->setAlignment(Qt::AlignLeft);                 //Ensures the graph starts being drawn on the left side of the screen.
-    QGraphicsScene* scene = new QGraphicsScene(graph);
+    this->scene = new QGraphicsScene(graph);
     scene->setSceneRect(0, 0, 320, 160);                //Stops the scene from moving around.
     graph->setScene(scene);
 }
@@ -489,7 +497,6 @@ void MainWindow::endSession(){
     user is viewing the Session history.
 */
 void MainWindow::plotHRVGraph(QVector<float> pulseData) {
-    QGraphicsScene* scene = ui->hrvGraph->scene();
     float currentWidth = scene->sceneRect().right();
 
     for(int i=0;i<pulseData.size();i++) {

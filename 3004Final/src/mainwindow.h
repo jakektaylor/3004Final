@@ -45,7 +45,9 @@ private:
 
     bool increaseSetting;                               //Used to modify settings.
     bool backOrMenu;                                    //Prevents sa summary from being displayed if in a Session and press "Back" or "Menu"
-    QPen* linePen;                                      //Used for plotting pulse points.
+    //Used for plotting pulse points.
+    QPen* linePen;
+    QGraphicsScene* scene;
     Log sessionSummary;                                 //Used for saving a Log of a Session.
     QTimer* batteryTimer;                               //Used for reducing the battery level after every X seconds.
 
