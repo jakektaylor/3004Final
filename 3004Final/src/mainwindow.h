@@ -59,6 +59,7 @@ private:
     void beginSession();
     void endSession();
     void plotHRVGraph(QVector<float> pulses);
+    void changeSetting();
 private slots:
     void plotPulsePoint(Log currentLog);
     void sensorStateChanged(const QString& text);
@@ -73,6 +74,5 @@ private slots:
     void displaySessionSummary(Log summary);
     void drainBattery();
     void rechargeBattery();
-    void changeSetting();
 };
 #endif // MAINWINDOW_H

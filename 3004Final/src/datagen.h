@@ -6,6 +6,7 @@
 #include <QRandomGenerator>
 #include <QDateTime>
 
+/*The Datagen class is responsible for generating the pulse data that is used to compute the coherence metrics. */
 class Datagen: public QObject
 {
     Q_OBJECT

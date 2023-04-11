@@ -7,6 +7,7 @@
 #include <QVector>
 #include <QtMath>
 
+/*  Purpose: This class is meant to */
 class Log {
 
     public:

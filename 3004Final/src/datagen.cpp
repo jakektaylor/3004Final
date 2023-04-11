@@ -1,6 +1,6 @@
 #include "datagen.h"
 
-//Constructor for the Datagen class.
+//Constructor and destructor for the Datagen class.
 Datagen::Datagen(QString coherence, QObject* parent): QObject(parent)
 {
     this->amplitude = 10;
@@ -18,10 +18,10 @@ Datagen::~Datagen() {
 }
 
 /* Purpose: This function is responsible for returning a value from the sine wave with the given frequency and vertical shift after the
-given number of seconds has elapsed.*/
+    given number of seconds has elapsed.*/
 void Datagen::getSensorReading(float seconds) {
 
-    float reading = (this->amplitude * qSin(2.0 * (float) M_PI * this->period * (seconds / 60.0))) + this->vShift;
+    float reading = applyRandomNoise(this->amplitude * qSin(2.0 * (float) M_PI * this->period * (seconds / 60.0))) + this->vShift;
     //Sends the Sensor reading to the current Session object.
     emit sendSensorReading(reading);
 }
@@ -32,10 +32,8 @@ void Datagen::setPeriod(float period) {
 }
 
 
-/*Purpose: this method is a helper method used to apply random noise to the pulse readings. (NO NOISE HAS BEEN ADDED YET!!!!!)*/
+/*Purpose: this method is a helper method used to apply random noise to the pulse readings. (NO NOISE HAS BEEN ADDED YET)*/
 float Datagen::applyRandomNoise(float reading) {
-    int isNegative = generator->bounded(0, 2);
-    if (isNegative == 1) return (float) reading * (float) generator->generateDouble() * (float) (-1);
-    else return (float) reading * (float) generator->generateDouble();
+    return (float) reading * (float) generator->generateDouble();
 
 }

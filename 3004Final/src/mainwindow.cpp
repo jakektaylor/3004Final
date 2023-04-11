@@ -80,7 +80,7 @@ void MainWindow::sensorStateChanged(const QString& text) {
 }
 
 /*  Purpose: This method is called when the power button in the UI is pressed. If the device is off, it turns it on. If it
-    is on, it turns it on.
+    is on, it turns it off.
 */
 void MainWindow::togglePowerOn() {
     if(!this->powerOn) {//Turn on the device
@@ -279,7 +279,7 @@ void MainWindow::goToMainMenu() {
     displayCurrMenu();
 }
 
-/*Purpose: Sends the user to the previous screen they */
+/*Purpose: Sends the user to the previous screen they were on.*/
 void MainWindow::goBack() {
     //Different behaviour if a Session is being displayed.
     if(this->displayingMenu) {
@@ -303,7 +303,8 @@ void MainWindow::goBack() {
     }
 }
 
-/*Purpose: */
+/*  Purpose: This method is called whenever the currentSession emits an updateSessionDisplay signal. It updates all of the metrics
+    and the graph in the Session view while a Session is active.*/
 void MainWindow::plotPulsePoint(Log currentLog) {
 
     /*Update the breath pacer*/
@@ -329,7 +330,8 @@ void MainWindow::plotPulsePoint(Log currentLog) {
     if(currentLog.getCoherenceScore() != -1) ui->coherenceNumber->display(currentLog.getCoherenceScore());
     if(currentLog.getAchievementScore() != -1) ui->acheivementNumber->display(currentLog.getAchievementScore());
     if(QString::compare(currentLog.getCoherenceLevel(), "NA", Qt::CaseInsensitive)) {
-        //Sets the light to red for low, blue for medium and green for high
+
+        //Sets the light to red for 'Low', blue for 'Medium' and green for 'High'.
         if(!QString::compare(currentLog.getCoherenceLevel(), "low", Qt::CaseInsensitive)) ui->coherenceLight->setStyleSheet("background-color: red;");
         else if (!QString::compare(currentLog.getCoherenceLevel(), "medium", Qt::CaseInsensitive)) ui->coherenceLight->setStyleSheet("background-color: blue;");
         else ui->coherenceLight->setStyleSheet("background-color:green;");
@@ -341,7 +343,7 @@ void MainWindow::plotPulsePoint(Log currentLog) {
 
 /*Purpose: This method is responsible for displaying a summary of a session once endSession() has been called.*/
 void MainWindow::displaySessionSummary(Log summary) {
-    if(!this->backOrMenu) {
+    if(!this->backOrMenu) {//Ensures that a summary is not displayed if the back button was pressed
         this->displayingSummary = true;
         this->sessionSummary = summary;                     //Used to save the Session data.
         this->clearScreen();
@@ -361,40 +363,26 @@ void MainWindow::displaySessionSummary(Log summary) {
         ui->acheivementNumber->display(summary.getAchievementScore());
 
         /*Display the challenge level*/
-        ui->challengeLabel->setText(QString("Challenge Level:%1").arg(summary.getChallengeLevel()));
+        ui->challengeLabel->setText(QString("Challenge Level: %1").arg(summary.getChallengeLevel()));
 
         /*Display the percentages of time in "Low", "Medium" and "High" coherence.*/
-        ui->lowLabel->setText(QString("Low:%1%").arg(summary.getCoherenceDistribution()["Low"]));
-        ui->mediumLabel->setText(QString("Medium:%1%").arg(summary.getCoherenceDistribution()["Medium"]));
-        ui->highLabel->setText(QString("High:%1%").arg(summary.getCoherenceDistribution()["High"]));
+        ui->lowLabel->setText(QString("Low: %1%").arg(summary.getCoherenceDistribution()["Low"]));
+        ui->mediumLabel->setText(QString("Medium: %1%").arg(summary.getCoherenceDistribution()["Medium"]));
+        ui->highLabel->setText(QString("High: %1%").arg(summary.getCoherenceDistribution()["High"]));
 
         /*Plot the final HRV graph*/
         plotHRVGraph(summary.getPulseData());
 
-        //Select the leftmost option in the set of options to keep the summary that is displayed.
+        //Select the leftmost option in the set of options that decide whether to keep the summary that is displayed.
         ui->keepSummary->setCurrentRow(0);
     } else this->backOrMenu = false;             //Reset it to false.
 }
 
-
-void MainWindow::changeSetting() {
-    if(this->displayingSlider && ui->menuWidget->currentRow() == 0) {
-        if(this->increaseSetting) currentSession->setChallengeLevel(currentSession->getChallengeLevel() + 1);
-        else currentSession->setChallengeLevel(currentSession->getChallengeLevel() - 1);
-
-        ui->settingValue->setValue(currentSession->getChallengeLevel());
-        ui->settingText->setText(QString::number(currentSession->getChallengeLevel()));
-    } else if (this->displayingSlider) {
-        if(this->increaseSetting) currentSession->setPacerSpeed(currentSession->getPacerSpeed() + 1);
-        else currentSession->setPacerSpeed(currentSession->getPacerSpeed() - 1);
-
-        ui->settingValue->setValue(currentSession->getPacerSpeed());
-        ui->settingText->setText(QString::number(currentSession->getPacerSpeed()));
-    }
-}
-
 /***INITIALIZING THE HELPER METHODS FOR THE MAINWINDOW CLASS***/
+
+/*Purpose: This method is resonsible for initializing the tree of Menus on the device.*/
 void MainWindow::initializeMainMenu() {
+
     //Create the Settings menu.
     Menu* settings = new Menu("Settings", {"Challenge Level", "Breath Pacer Speed"}, mainMenu);
 
@@ -402,6 +390,7 @@ void MainWindow::initializeMainMenu() {
     Menu* history = new Menu("History", {"Review Session History", "Clear Session History"}, mainMenu);
     Menu* reviewHistory = new Menu("Review Session History", {}, history);
     Menu* clearHistory = new Menu("Clear Session History", {"Yes", "No"}, history);
+
     history->addSubMenu(reviewHistory);
     history->addSubMenu(clearHistory);
     mainMenu->addSubMenu(NULL);            //NULL is used to indicate that the "Start New Session" menu entry does not lead to a menu.
@@ -409,6 +398,7 @@ void MainWindow::initializeMainMenu() {
     mainMenu->addSubMenu(history);
 }
 
+/*  Purpose: This method is responsible for clearing the screen so that a new view may be displayed. */
 void MainWindow::clearScreen() {
 
     for(int i=0; i<ui->coherenceStack->count();i++) {
@@ -423,7 +413,8 @@ void MainWindow::clearScreen() {
     ui->menuWidget->setVisible(false);
 }
 
-/*Always call this before calling clearScreen after a Session has been run.*/
+/*Purpose: Resets all of the widgets related to the Session metrics.
+ * Always call this before calling clearScreen() after a Session has been run.*/
 void MainWindow::revertSessionView() {
     ui->coherenceLabel->setText("Coherence");
     ui->coherenceNumber->display(0);
@@ -434,6 +425,7 @@ void MainWindow::revertSessionView() {
     ui->breathPacer->setFormat("Breath Pacer");
 }
 
+/*  Purpose: This method is responsible for displaying the menu stored in the 'currMenu' variable.*/
 void MainWindow::displayCurrMenu() {
 
     this->clearScreen();
@@ -447,7 +439,9 @@ void MainWindow::displayCurrMenu() {
     ui->menuWidget->setVisible(true);
 }
 
+/*  Purpose: This method is responsible for displaying the Session view where the user can start a Session.*/
 void MainWindow::displaySessionView() {
+
     //Display the coherence score, session length and achievement score in the top bar.
     this->clearScreen();
     ui->sessionView->setVisible(true);
@@ -465,11 +459,17 @@ void MainWindow::displaySessionView() {
     graph->setScene(scene);
 }
 
+/*  Purpose: This method is responsible for beginning a Session, measuring the user's heart rate and using it to compute the
+    coherence related metrics.
+*/
 void MainWindow::beginSession(){
     this->sessionActive = true;
     this->currentSession->beginSession();
 }
 
+/*  Purpose: This method is responsible for stopping the Session object from receiving pulse data and
+ *  creating a new underlying Session object for the device.
+*/
 void MainWindow::endSession(){
     this->currentSession->endSession();
     ui->coherenceLight->setStyleSheet("");              //Turns off the coherence light.
@@ -484,20 +484,24 @@ void MainWindow::endSession(){
     connect(currentSession, &Session::sendSessionSummary, this, &MainWindow::displaySessionSummary);
 }
 
+/*  Purpose: This method is responsible for plotting the pulse data given in the argument 'pulseData' on a QGraphicsScene.
+    It is used both to display the pulseData that is obtained during a Session and to display the Log of pulseData when the
+    user is viewing the Session history.
+*/
 void MainWindow::plotHRVGraph(QVector<float> pulseData) {
     QGraphicsScene* scene = ui->hrvGraph->scene();
     float currentWidth = scene->sceneRect().right();
-    /*Note: The '- 4' is added below to better align the lign with the axes*/
+
     for(int i=0;i<pulseData.size();i++) {
         //Expand the Scene window if the line is near the right end of it.
         if (i*10 > currentWidth - 50) scene->setSceneRect(0, 0, currentWidth + 320, 160);
 
         float pulse = pulseData.at(i);
-        scene->addEllipse(i * 10, -4 * pulse + 400 - 8, 1, 1, *linePen);
+        scene->addEllipse(i * 10, -4 * pulse + 400, 1, 1, *linePen);
         if(i >=1) {
             float previousPulse = pulseData.at(i-1);
-            scene->addLine(i * 10, -4 * pulse + 400 - 8,
-                                 (i-1) * 10, -4 * previousPulse + 400 - 8, *linePen);
+            scene->addLine(i * 10, -4 * pulse + 400,
+                                 (i-1) * 10, -4 * previousPulse + 400, *linePen);
         }
         if (i % 5 == 0) {
             //Display the time.
@@ -509,8 +513,15 @@ void MainWindow::plotHRVGraph(QVector<float> pulseData) {
     }
 }
 
+/*  Purpose: The purpose of this method is to display a QSlider on screen that allows the user to change
+    the current 'Challenge Level' or 'Breath Pacer Speed'. When the slider is displayed, the user simply uses
+    the left and right arrow buttons to move the slider. They can press the 'Menu' button, the "Back" button or
+    the selector button on the UI to return from the slider view.
+*/
 void MainWindow::displaySettingView() {
     ui->settingsView->setVisible(true);
+
+    //Displays the slider where the user is able to change the challenge level.
     if(ui->menuWidget->currentRow() == 0){
         ui->menuLabel->setText("Challenge Level");
         ui->settingValue->setMinimum(1);
@@ -518,10 +529,34 @@ void MainWindow::displaySettingView() {
         ui->settingValue->setValue(currentSession->getChallengeLevel());
         ui->settingText->setText(QString::number(currentSession->getChallengeLevel()));
 
-    }else {
+    }
+    //Displays the slider where the user is able to change the pacer speed.
+    else {
         ui->menuLabel->setText("Breath Pacer Speed");
         ui->settingValue->setMinimum(1);
         ui->settingValue->setMaximum(30);
+        ui->settingValue->setValue(currentSession->getPacerSpeed());
+        ui->settingText->setText(QString::number(currentSession->getPacerSpeed()));
+    }
+}
+
+/*Purpose: This method is responsible for allowing the user to change the value of a Setting when viewing the slider.*/
+void MainWindow::changeSetting() {
+
+    //Handles the case where the user is changing the challenge level
+    if(this->displayingSlider && ui->menuWidget->currentRow() == 0) {
+        if(this->increaseSetting) currentSession->setChallengeLevel(currentSession->getChallengeLevel() + 1);
+        else currentSession->setChallengeLevel(currentSession->getChallengeLevel() - 1);
+
+        ui->settingValue->setValue(currentSession->getChallengeLevel());
+        ui->settingText->setText(QString::number(currentSession->getChallengeLevel()));
+    }
+
+    //Handles the case where the user is changing the breath pacer speed
+    else if (this->displayingSlider) {
+        if(this->increaseSetting) currentSession->setPacerSpeed(currentSession->getPacerSpeed() + 1);
+        else currentSession->setPacerSpeed(currentSession->getPacerSpeed() - 1);
+
         ui->settingValue->setValue(currentSession->getPacerSpeed());
         ui->settingText->setText(QString::number(currentSession->getPacerSpeed()));
     }
